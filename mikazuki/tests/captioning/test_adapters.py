@@ -318,6 +318,7 @@ class FakeChatProcessor:
         }
 
     def batch_decode(self, generated, skip_special_tokens):
+        self.decoded_tokens = generated
         return [f"vlm caption {index}" for index in range(len(generated))]
 
 
@@ -443,34 +444,37 @@ class ChatVLMCaptionProviderTests(unittest.TestCase):
         self.assertFalse(provider.loaded)
 
     def test_qwen_forwards_pixel_budget_without_pre_resize_and_accepts_sequences_output(self):
-        processor = FakeChatProcessor()
-        model = FakeStructuredChatModel()
-        provider = ChatVLMCaptionProvider(
-            "qwen-test",
-            "example/qwen",
-            architecture="qwen2.5-vl",
-            loader=lambda *args, **kwargs: (processor, model),
-        )
-        image = Image.new("RGB", (20, 10))
+        for architecture in ("qwen2-vl", "qwen2.5-vl", "qwen3-vl"):
+            with self.subTest(architecture=architecture):
+                processor = FakeChatProcessor()
+                model = FakeStructuredChatModel()
+                provider = ChatVLMCaptionProvider(
+                    "qwen-test",
+                    "example/qwen",
+                    architecture=architecture,
+                    loader=lambda *args, **kwargs: (processor, model),
+                )
+                image = Image.new("RGB", (20, 10))
 
-        predictions = provider.infer(
-            image,
-            params={
-                "promptPreset": "training_prompt",
-                "minPixels": 1_000,
-                "maxPixels": 2_000,
-                "numBeams": 1,
-            },
-            device="cpu",
-            dtype="float32",
-        )
+                predictions = provider.infer(
+                    image,
+                    params={
+                        "promptPreset": "training_prompt",
+                        "minPixels": 1_000,
+                        "maxPixels": 2_000,
+                        "numBeams": 1,
+                    },
+                    device="cpu",
+                    dtype="float32",
+                )
 
-        self.assertEqual([item.text for item in predictions], ["vlm caption 0"])
-        conversations, template_options = processor.calls[0]
-        user_message = next(message for message in conversations[0] if message["role"] == "user")
-        self.assertIs(user_message["content"][0]["image"], image)
-        self.assertEqual(template_options["min_pixels"], 1_000)
-        self.assertEqual(template_options["max_pixels"], 2_000)
+                self.assertEqual([item.text for item in predictions], ["vlm caption 0"])
+                conversations, template_options = processor.calls[0]
+                user_message = next(message for message in conversations[0] if message["role"] == "user")
+                self.assertIs(user_message["content"][0]["image"], image)
+                self.assertEqual(template_options["min_pixels"], 1_000)
+                self.assertEqual(template_options["max_pixels"], 2_000)
+                self.assertEqual(processor.decoded_tokens.shape, (1, 2))
 
     def test_joycaption_uses_its_documented_two_step_prompt_processing(self):
         processor = FakeJoyProcessor()

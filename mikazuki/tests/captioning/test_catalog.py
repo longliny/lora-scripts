@@ -1,6 +1,7 @@
 import unittest
+from unittest.mock import patch
 
-from mikazuki.captioning.adapters import CaptionProvider, WDTaggerProvider
+from mikazuki.captioning.adapters import CaptionProvider, ChatVLMCaptionProvider, WDTaggerProvider
 from mikazuki.captioning.catalog import CaptionModelCatalog, builtin_model_descriptors
 
 
@@ -35,7 +36,7 @@ class CaptionModelCatalogTests(unittest.TestCase):
             "blip2-flan-t5-xxl",
         }
 
-        self.assertEqual(len(summaries), 25)
+        self.assertEqual(len(summaries), 26)
         self.assertTrue(legacy_tagger_ids.issubset(ids))
         self.assertTrue(blip2_ids.issubset(ids))
         self.assertIn("blip-large", ids)
@@ -46,6 +47,7 @@ class CaptionModelCatalogTests(unittest.TestCase):
         self.assertIn("toriigate-v0.4-2b", ids)
         self.assertIn("llava-onevision-0.5b", ids)
         self.assertIn("qwen3-vl-4b", ids)
+        self.assertIn("qwen3-vl-8b", ids)
         self.assertEqual(catalog.response().defaultModelId, "wd-vit-v3")
 
     def test_dependency_availability_is_evaluated_when_listing(self):
@@ -127,10 +129,40 @@ class CaptionModelCatalogTests(unittest.TestCase):
             cache_checker=lambda descriptor: False,
             device_resolver=lambda descriptor: ["cpu"],
         )
-        qwen3 = catalog.get("qwen3-vl-4b")
-        self.assertEqual(qwen3.status, "unavailable")
-        self.assertIn("4.57.0", qwen3.statusReason)
-        self.assertFalse(qwen3.trustRemoteCode)
+        with patch("mikazuki.captioning.catalog.version", return_value="4.54.1"):
+            for model_id in ("qwen3-vl-4b", "qwen3-vl-8b"):
+                with self.subTest(model_id=model_id):
+                    qwen3 = catalog.get(model_id)
+                    self.assertEqual(qwen3.status, "unavailable")
+                    self.assertIn("4.57.0", qwen3.statusReason)
+                    self.assertEqual(qwen3.capabilities.devices, [])
+                    self.assertFalse(qwen3.trustRemoteCode)
+                    with self.assertRaisesRegex(RuntimeError, "4.57.0"):
+                        catalog.create_provider(model_id)
+
+    def test_qwen3_models_are_usable_with_supported_transformers(self):
+        catalog = CaptionModelCatalog(
+            dependency_checker=lambda module: True,
+            cache_checker=lambda descriptor: descriptor.id == "qwen3-vl-4b",
+            device_resolver=lambda descriptor: ["cpu", "cuda"],
+        )
+        with patch("mikazuki.captioning.catalog.version", return_value="4.57.6"):
+            for size, expected_status in (("4b", "ready"), ("8b", "downloadable")):
+                model_id = f"qwen3-vl-{size}"
+                with self.subTest(model_id=model_id):
+                    summary = catalog.get(model_id)
+                    self.assertEqual(summary.status, expected_status)
+                    self.assertEqual(summary.capabilities.devices, ["cpu", "cuda"])
+                    self.assertEqual(summary.capabilities.languages, ["zh", "en"])
+                    self.assertFalse(summary.trustRemoteCode)
+                    params = catalog.validate_params(model_id, {})
+                    self.assertIn("minPixels", params)
+                    self.assertIn("maxPixels", params)
+                    provider = catalog.create_provider(model_id)
+                    self.assertIsInstance(provider, ChatVLMCaptionProvider)
+                    self.assertEqual(provider.repo_id, f"Qwen/Qwen3-VL-{size.upper()}-Instruct")
+                    self.assertEqual(provider.architecture, "qwen3-vl")
+                    self.assertFalse(provider.loaded)
 
 
 if __name__ == "__main__":
