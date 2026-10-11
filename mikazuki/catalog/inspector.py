@@ -10,6 +10,15 @@ from typing import Any, Dict
 
 
 TRAINERS = {
+    "krea2.lora": {
+        "title": "Krea 2 Raw LoRA",
+        "family": "krea2",
+        "task": "lora",
+        "module": "mikazuki.training.krea2",
+        "script": "scripts/krea2_train_network.py",
+        "status": "experimental",
+        "defaultNetworkModule": "peft.lora",
+    },
     "sd.lora": {
         "title": "SD 1.x / 2.x LoRA",
         "family": "sd",
@@ -22,7 +31,8 @@ TRAINERS = {
         "title": "SDXL LoRA",
         "family": "sdxl",
         "task": "lora",
-        "module": "sdxl_train_network",
+        "module": "mikazuki.training.sdxl",
+        "script": "scripts/sdxl_train_network.py",
         "status": "stable",
         "defaultNetworkModule": "networks.lora",
     },
@@ -70,7 +80,8 @@ TRAINERS = {
         "title": "Anima LoRA",
         "family": "anima",
         "task": "lora",
-        "module": "anima_train_network",
+        "module": "mikazuki.training.anima",
+        "script": "scripts/anima_train_network.py",
         "status": "experimental",
         "defaultNetworkModule": "networks.lora_anima",
     },
@@ -146,7 +157,7 @@ def _extract_parser(module_name: str, scripts_root: Path) -> argparse.ArgumentPa
     return module.setup_parser()
 
 
-def _extract_actions(parser: argparse.ArgumentParser, script: str) -> Dict[str, Dict[str, Any]]:
+def _extract_actions(parser: argparse.ArgumentParser, script: str, script_path: str = None) -> Dict[str, Dict[str, Any]]:
     params: Dict[str, Dict[str, Any]] = {}
     for action in parser._actions:
         if not action.option_strings or action.dest == "help":
@@ -165,7 +176,7 @@ def _extract_actions(parser: argparse.ArgumentParser, script: str) -> Dict[str, 
             "required": bool(getattr(action, "required", False)),
             "help": action.help or "",
             "source": {
-                "script": f"scripts/dev/{script}.py",
+                "script": script_path or f"scripts/dev/{script}.py",
                 "module": script,
                 "function": "setup_parser",
             },
@@ -178,7 +189,7 @@ def generate_manifest(scripts_root: Path) -> Dict[str, Any]:
     for trainer_id, trainer in TRAINERS.items():
         module_name = trainer["module"]
         parser = _extract_parser(module_name, scripts_root)
-        script = f"scripts/dev/{module_name}.py"
+        script = trainer.get("script", f"scripts/dev/{module_name}.py")
         trainers[trainer_id] = {
             "trainer": {
                 "title": trainer["title"],
@@ -189,7 +200,7 @@ def generate_manifest(scripts_root: Path) -> Dict[str, Any]:
                 "defaultNetworkModule": trainer["defaultNetworkModule"],
             },
             "script": script,
-            "params": _extract_actions(parser, module_name),
+            "params": _extract_actions(parser, module_name, script),
         }
 
     manifest = {

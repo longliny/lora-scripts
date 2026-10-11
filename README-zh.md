@@ -47,6 +47,12 @@ Stable Diffusion 训练工作台。一切集成于一个 WebUI 中。
 | ------------ | ------------ | ------------ |
 | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/b2ac5c36-3edf-43a6-9719-cb00b757fc76) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/9504fad1-7d77-46a7-a68f-91fbbdbc7407) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/4597917b-caa8-4e90-b950-8b01738996f2) |
 
+### Krea 2 Raw LoRA
+
+训练工作台新增 **Krea 2 Raw LoRA**，沿用现有模型资产、数据集、参数分组、任务日志与指标页面。训练由项目原生代码实现，支持 BF16/NF4/FP8 底模权重、SDPA/Flash Attention 2/xFormers、分阶段缓存、宽高比分桶、断点续训和采样预览；不依赖 OneTrainer。完整底模短训结果、推荐 CUDA 环境及使用方法见 [Krea 2 训练说明](docs/krea2-training.md)。
+
+Windows 训练环境采用 Python 3.12.15 / PyTorch 2.14.1 / torchvision 0.29.1 / CUDA 13.0，Flash Attention 2 独立于 xFormers。工作台未检测到 xFormers 时会禁用对应选项，安装兼容版本后刷新即可恢复。SDXL、Anima、Krea2 的配置和验证范围见 [训练环境说明](docs/training-environment.md)。
+
 ### Caption 与标签识别工作台
 
 启动 GUI 后打开 [http://127.0.0.1:28000/caption](http://127.0.0.1:28000/caption)，即可扫描数据集，并批量生成标签或自然语言 Caption。服务端目录当前登记 25 个模型：既有 WD/CL Tagger、BLIP/GIT/BLIP-2 兼容模型，以及 6 个 chat VLM 条目；缺少依赖或版本不兼容的模型会在任务开始前明确禁用。
@@ -58,7 +64,7 @@ Caption 默认处理全部扫描图片、跳过已有文件并直接安全写入
 
 ### 必要依赖
 
-Python 3.10 和 Git
+Python 和 Git。当前 Windows 训练配置推荐 64 位 Python 3.12.15；仍保留 Python 3.10 的兼容依赖配置。版本对照与迁移说明见 [Python 升级评估](docs/python-upgrade-assessment.md)。
 
 ### 克隆带子模块的仓库
 

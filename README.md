@@ -47,6 +47,12 @@ Follow the installation guide below to install the GUI, then run `run_gui.ps1`(w
 | ------------ | ------------ | ------------ |
 | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/b2ac5c36-3edf-43a6-9719-cb00b757fc76) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/9504fad1-7d77-46a7-a68f-91fbbdbc7407) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/4597917b-caa8-4e90-b950-8b01738996f2) |
 
+### Krea 2 Raw LoRA
+
+The training workbench includes **Krea 2 Raw LoRA**, with a project-owned training loop, aspect buckets, staged latent/text caches, BF16/NF4/FP8 weight storage, selectable SDPA/Flash Attention 2/xFormers, resumable checkpoints and previews. It uses the existing UI and job system without depending on OneTrainer. See the [Krea 2 training guide](docs/krea2-training.md) for full-model smoke-test results, the CUDA compatibility profile and validation limits.
+
+The validated Windows profile uses Python 3.12.15, PyTorch 2.14.1, torchvision 0.29.1 and CUDA 13.0 with independent Flash Attention 2. xFormers controls remain disabled until a compatible package is installed and the page is refreshed. See the [training environment guide](docs/training-environment.md) for SDXL, Anima and Krea2 configuration and test coverage.
+
 ### Caption & tagging workspace
 
 Open [http://127.0.0.1:28000/caption](http://127.0.0.1:28000/caption) after starting the GUI to scan a dataset and batch-generate tags or natural-language captions. The server-side catalog currently registers 25 models: the existing WD/CL taggers, BLIP/GIT/BLIP-2 compatibility models, and six chat VLM entries. Missing dependencies and incompatible model versions are disabled before a job starts.
@@ -58,7 +64,7 @@ Caption generation processes the full scanned dataset by default, skips existing
 
 ### Required Dependencies
 
-Python 3.10 and Git
+Python and Git. The current Windows training profile recommends 64-bit Python 3.12.15; a Python 3.10 compatibility profile is retained. See the [Python upgrade assessment](docs/python-upgrade-assessment.md) for the measured results and migration details.
 
 ### Clone repo with submodules
 

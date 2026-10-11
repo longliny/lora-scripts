@@ -61,6 +61,8 @@ export interface ParamDefinition {
   sensitive?: boolean
   advanced?: boolean
   hidden?: boolean
+  unavailableReason?: string
+  unavailableChoices?: Record<string, string>
   rules?: Record<string, unknown>[]
   extra?: Record<string, unknown>
 }

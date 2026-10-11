@@ -37,11 +37,16 @@ def validate_config(trainer_id: str, config_path: Path, scripts_root: Path = Pat
     # sd-scripts' read_config_from_file reads sys.argv a second time so that
     # explicit CLI flags override TOML. Give it the same minimal command that
     # the job runner will use, without leaking this helper's own CLI flags.
-    with _argv([trainer["module"], "--config_file", str(path)]):
-        args = parser.parse_args()
-        from library import args as args_util
+    if trainer_id == "krea2.lora":
+        from mikazuki.training.krea2 import parse_args
 
-        loaded = args_util.read_config_from_file(args, parser)
+        loaded = parse_args(["--config_file", str(path)])
+    else:
+        with _argv([trainer["module"], "--config_file", str(path)]):
+            args = parser.parse_args()
+            from library import args as args_util
+
+            loaded = args_util.read_config_from_file(args, parser)
 
     return {
         "trainerId": trainer_id,

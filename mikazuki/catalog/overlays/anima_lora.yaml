@@ -85,7 +85,7 @@ params:
     priority: advanced
   attn_mode:
     label: Attention 实现
-    description: 选择 Anima DiT 的 Attention 实现；xFormers 需要同时启用拆分 Attention，SageAttention 不支持训练，sdpa 仅作为 torch 的兼容别名。
+    description: Torch 使用 PyTorch SDPA；Flash Attention 2 使用独立 flash-attn，训练计算需要 BF16 或 FP16。xFormers 仅在环境安装后可选，且需要同时启用拆分 Attention。sdpa 是 torch 的兼容别名。
     group: memory
     priority: recommended
     control: select
@@ -95,7 +95,7 @@ params:
       choiceLabels:
         torch: Torch（推荐）
         xformers: xFormers
-        flash: Flash Attention
+        flash: Flash Attention 2
         sdpa: SDPA（Torch 兼容别名）
   split_attn:
     label: 拆分 Attention

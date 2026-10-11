@@ -46,6 +46,25 @@ params:
     effectiveDefault: false
   sdpa:
     effectiveDefault: true
+    description: 旧配置兼容开关；请使用 Attention 实现选择训练内核。
+    hidden: true
+    priority: hidden
+  xformers:
+    description: 旧配置兼容开关；请使用 Attention 实现选择训练内核。
+    hidden: true
+    priority: hidden
+  attn_mode:
+    label: Attention 实现
+    description: SDPA 由 PyTorch 自动选择内核；Flash Attention 2 使用独立 flash-attn，支持 SDXL 自注意力和交叉注意力的训练反向。xFormers 仅在环境安装后可选。
+    group: memory
+    priority: recommended
+    control: select
+    effectiveDefault: sdpa
+    extra:
+      choiceLabels:
+        sdpa: SDPA（PyTorch 自动）
+        flash: Flash Attention 2
+        xformers: xFormers
   no_half_vae:
     priority: recommended
     description: 即使训练使用 fp16/bf16，也强制 SDXL VAE 以 float32 运行；使用 fp16 时可避免部分 VAE 数值不稳定问题，但会增加显存。

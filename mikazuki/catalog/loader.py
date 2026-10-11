@@ -94,7 +94,25 @@ class CatalogService:
         ]
 
     def get_trainer(self, trainer_id: str) -> Optional[TrainerDefinition]:
-        return self._trainers.get(trainer_id)
+        from mikazuki.training.attention_capabilities import attention_unavailable
+
+        trainer = self._trainers.get(trainer_id)
+        if trainer is None:
+            return None
+        # Installation state can change while the server is running. Do not
+        # cache it or mutate the catalog/defaults shared by subsequent requests.
+        trainer = trainer.copy(deep=True)
+        missing = attention_unavailable()
+        for param in trainer.params.values():
+            if param.name in {"xformers", "diffusers_xformers"}:
+                param.unavailableReason = missing.get("xformers")
+            elif param.name == "use_flash_attn":
+                param.unavailableReason = missing.get("flash")
+            if param.name == "attn_mode":
+                param.unavailableChoices = {value: reason for value, reason in missing.items() if value in (param.choices or [])}
+                if param.effectiveDefault in param.unavailableChoices:
+                    param.effectiveDefault = "torch" if "torch" in (param.choices or []) else "sdpa"
+        return trainer
 
     def get_param_groups(self, trainer_id: str, view: str = "recommended") -> List[Dict[str, Any]]:
         trainer = self.get_trainer(trainer_id)

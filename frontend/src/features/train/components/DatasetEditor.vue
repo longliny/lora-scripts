@@ -9,6 +9,7 @@ import { useDraftStore } from '@/stores/draft'
 const catalog = useCatalogStore()
 const draft = useDraftStore()
 const pickerVisible = ref(false)
+const fixedCaptionCache = computed(() => catalog.selectedTrainer?.family === 'krea2')
 
 const resolutionLabel = computed(() => `${draft.dataset.resolution[0]} × ${draft.dataset.resolution[1]}`)
 const bucketAlignment = computed(() => {
@@ -192,12 +193,12 @@ const bucketRangeValid = computed(
           <el-switch v-model="draft.dataset.bucketNoUpscale" :disabled="!draft.dataset.enableBucket" />
         </label>
 
-        <label class="option-card">
+        <label class="option-card" :class="{ disabled: fixedCaptionCache }">
           <span>
             <strong>随机打乱 Caption</strong>
-            <small>适合逗号分隔标签；与文本编码器缓存可能冲突。</small>
+            <small>{{ fixedCaptionCache ? 'Krea 2 使用固定文本缓存，不支持训练期间打乱 Caption。' : '适合逗号分隔标签；与文本编码器缓存可能冲突。' }}</small>
           </span>
-          <el-switch v-model="draft.dataset.shuffleCaption" />
+          <el-switch v-model="draft.dataset.shuffleCaption" :disabled="fixedCaptionCache" />
         </label>
 
         <label class="field" for="keep-tokens">
@@ -205,6 +206,7 @@ const bucketRangeValid = computed(
           <el-input-number
             id="keep-tokens"
             v-model="draft.dataset.keepTokens"
+            :disabled="fixedCaptionCache"
             :min="0"
             controls-position="right"
           />

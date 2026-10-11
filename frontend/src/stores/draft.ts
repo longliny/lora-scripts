@@ -356,6 +356,10 @@ export const useDraftStore = defineStore('draft', {
       this.dataset = emptyDataset(datasetDefaults)
       this.runtime = { gpuIds: [], numCpuThreadsPerProcess: 8 }
       this.sample = emptySample(this.dataset.resolution)
+      if (trainerId === 'krea2.lora') {
+        this.sample.prompts[0].steps = 52
+        this.sample.prompts[0].cfgScale = 3.5
+      }
       this.manifestHash = manifestHash
       this.hydratedTrainerId = trainerId
       this.lastSavedAt = ''

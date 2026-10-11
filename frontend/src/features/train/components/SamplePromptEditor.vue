@@ -8,6 +8,7 @@ import { useDraftStore } from '@/stores/draft'
 
 const draft = useDraftStore()
 const catalog = useCatalogStore()
+const isKrea2 = computed(() => catalog.selectedTrainer?.family === 'krea2')
 
 const usesGuidance = computed(() =>
   ['flux', 'chroma', 'lumina', 'hunyuan_image', 'anima'].includes(catalog.selectedTrainer?.family || ''),
@@ -44,9 +45,9 @@ function newPrompt(): SamplePromptDraft {
     negativePrompt: '',
     width: draft.dataset.resolution[0] || 1024,
     height: draft.dataset.resolution[1] || 1024,
-    steps: 20,
+    steps: isKrea2.value ? 52 : 20,
     seed: 1337,
-    cfgScale: 1,
+    cfgScale: isKrea2.value ? 3.5 : 1,
     ...(usesGuidance.value ? { guidanceScale: 1 } : {}),
   }
 }
@@ -91,6 +92,9 @@ function updateStepSchedule(value: number | undefined) {
     </div>
 
     <template v-if="draft.sample.enabled">
+      <p v-if="isKrea2" class="sample-note">
+        Krea 2 使用 Raw 底模预览，建议 52 步、CFG 3.5；CFG 0 关闭引导。最终效果请将 LoRA 加载到 Turbo，使用 8 步、CFG 0。
+      </p>
       <div class="sample-schedule">
         <label for="sample-epochs">
           <span>每 N 个 Epoch</span>
@@ -227,6 +231,12 @@ function updateStepSchedule(value: number | undefined) {
 </template>
 
 <style scoped>
+.sample-note {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
 .sample-editor {
   display: grid;
   gap: 20px;

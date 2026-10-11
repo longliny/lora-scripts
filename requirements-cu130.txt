@@ -1,0 +1,5 @@
+# Verified Windows x64 / Python 3.12.15 (also 3.10) / RTX 5090 training profile.
+# Install before requirements.txt. xFormers is optional and is not installed.
+--index-url https://download.pytorch.org/whl/cu130
+torch==2.14.1+cu130
+torchvision==0.29.1+cu130

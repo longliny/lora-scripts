@@ -207,6 +207,6 @@ python -m accelerate.commands.launch $launch_args --num_cpu_threads_per_process=
   --min_bucket_reso=$min_bucket_reso `
   --max_bucket_reso=$max_bucket_reso `
   --keep_tokens=$keep_tokens `
-  --xformers --shuffle_caption $ext_args
+  --sdpa --shuffle_caption $ext_args
 Write-Output "Train finished"
 Read-Host | Out-Null ;

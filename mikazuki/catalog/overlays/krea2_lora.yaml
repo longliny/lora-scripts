@@ -1,0 +1,175 @@
+trainer:
+  defaultNetworkModule: peft.lora
+  datasetDefaults:
+    resolution: [1024, 1024]
+    minBucketReso: 256
+    maxBucketReso: 2048
+    bucketResoSteps: 16
+    shuffleCaption: false
+    keepTokens: 0
+params:
+  pretrained_model_name_or_path:
+    label: Krea 2 Raw 底模
+    description: 选择完整 Krea 2 Raw Diffusers 目录，或填写 krea/Krea-2-Raw。目录包含 transformer、text_encoder、tokenizer、vae、scheduler；在线下载需先在 Hugging Face 获得模型访问权限。Raw 用于训练，输出 LoRA 可加载到 Turbo 推理。
+    control: modelSource
+    fileKind: null
+    effectiveDefault: krea/Krea-2-Raw
+    placeholder: krea/Krea-2-Raw 或本地 Diffusers 目录
+  revision:
+    label: 模型版本
+    description: Hugging Face 分支、标签或提交 SHA；开始训练时解析到固定快照，防止缓存混用。使用本地目录时忽略。
+    group: model
+    priority: advanced
+    effectiveDefault: main
+  transformer_path:
+    label: Transformer 权重覆盖
+    description: 可选的原始 raw.safetensors 权重文件；文本编码器、Tokenizer、VAE 和模型配置仍从上方完整底模读取。留空使用底模中的 Transformer。
+    group: model
+    priority: advanced
+    control: file
+    fileKind: model
+  local_files_only:
+    label: 仅使用本地缓存
+    description: 禁止自动下载模型；仓库 ID 必须已完整缓存，也可直接选择本地 Diffusers 目录。
+    group: model
+    priority: advanced
+    control: switch
+  network_module:
+    effectiveDefault: peft.lora
+    hidden: true
+    priority: hidden
+  network_dim:
+    effectiveDefault: 16
+  network_alpha:
+    description: LoRA 的缩放系数，默认与 Rank 同为 16；保存时写入适配器元数据，加载时保留 Alpha/Rank 比例。
+    effectiveDefault: 16
+    min: 0.001
+  network_dropout:
+    description: LoRA 分支的 Dropout 概率，必须小于 1；默认关闭。
+    max: 0.99
+  lora_target:
+    label: LoRA 训练层
+    description: 训练主 DiT 的注意力层，或同时训练其 MLP。文本特征融合层、文本编码器和 VAE 始终冻结。
+    group: network
+    priority: recommended
+    control: select
+    effectiveDefault: attention_mlp
+    extra:
+      choiceLabels:
+        attention: 注意力层
+        attention_mlp: 注意力与 MLP（推荐）
+  base_precision:
+    label: 底模权重精度
+    description: NF4 最节省显存；FP8 E4M3 按输出通道缩放存储冻结的线性层权重，前向与反向按层还原为 BF16 计算，LoRA 保持 FP32。输入、时间和输出投影保留 BF16。BF16 原精度需要更多显存；请按分辨率和 Batch Size 实测。
+    group: memory
+    priority: recommended
+    control: select
+    effectiveDefault: nf4
+    extra:
+      choiceLabels:
+        nf4: NF4 量化（节省显存）
+        fp8: FP8 E4M3（BF16 计算）
+        bf16: BF16 原精度
+  attn_mode:
+    label: Attention 计算方式
+    description: SDPA 由 PyTorch 自动选择算子；Flash Attention 2 使用独立 flash-attn，支持分组注意力、长短 Caption 和训练反向；xFormers 仅在环境安装后可选。Flash 不可用时会在训练前报错，不会静默回退。此选项控制 DiT，不改变文本编码器缓存方式。
+    group: memory
+    priority: recommended
+    control: select
+    effectiveDefault: flash
+    extra:
+      choiceLabels:
+        sdpa: SDPA（PyTorch 自动）
+        flash: Flash Attention 2
+        xformers: xFormers（自动）
+  mixed_precision:
+    description: Krea 2 使用 BF16 训练计算，LoRA 可训练参数保留 FP32；需要支持 BF16 的 CUDA 显卡。
+    effectiveDefault: bf16
+  gradient_checkpointing:
+    effectiveDefault: true
+  vae_tiling:
+    label: VAE 分块处理
+    description: 缓存图片和生成预览时分块运行 Qwen-Image VAE，降低峰值显存；训练开始前会依次缓存潜变量与文本，并释放 VAE 和文本编码器。
+    group: memory
+    priority: recommended
+    control: switch
+    effectiveDefault: true
+  training_cache_dir:
+    label: 训练缓存目录
+    description: Krea 2 始终缓存潜变量和文本特征，默认放在输出目录的 .krea2-cache 中；此处可指定已有目录。图片、Caption、模型或 Token 长度变化后会自动生成新缓存。请关闭 Caption 打乱。
+    group: memory
+    priority: recommended
+    control: folder
+  learning_rate:
+    effectiveDefault: 0.0001
+    min: 0.000000001
+  optimizer_type:
+    description: AdamW8bit 减少优化器状态显存；AdamW 使用标准 PyTorch 实现。两者均只更新 LoRA 参数。
+    choices: [AdamW, AdamW8bit]
+    effectiveDefault: AdamW8bit
+    extra:
+      allowCustomChoice: false
+  weight_decay:
+    label: 权重衰减
+    description: AdamW 的权重衰减系数，默认 0.01；设为 0 可关闭。
+    group: optimizer
+    priority: advanced
+    control: number
+    min: 0
+    step: 0.001
+  lr_scheduler:
+    description: 选择恒定学习率、带预热恒定、线性或余弦衰减；按优化器更新步数推进。
+    choices: [constant, constant_with_warmup, linear, cosine]
+    extra:
+      allowCustomChoice: false
+  lr_warmup_steps:
+    description: 学习率预热的整数步数；仅在使用带预热、线性或余弦调度器时生效。
+    min: 0
+    step: 1
+  timestep_sampling:
+    label: 时间步采样
+    description: 使用 Logit-Normal 或均匀分布抽样，再根据每个 Bucket 的图像 Token 数应用 Krea 2 的指数偏移。
+    group: model_specific
+    priority: recommended
+    control: select
+    effectiveDefault: logit_normal
+    extra:
+      choiceLabels:
+        logit_normal: Logit-Normal（推荐）
+        uniform: 均匀分布
+  logit_mean:
+    label: Logit 均值
+    description: Logit-Normal 时间步分布的均值，默认 0；均匀采样时忽略。
+    group: model_specific
+    priority: advanced
+    control: number
+    step: 0.1
+  logit_std:
+    label: Logit 标准差
+    description: Logit-Normal 时间步分布的标准差，默认 1，必须大于 0；均匀采样时忽略。
+    group: model_specific
+    priority: advanced
+    control: number
+    min: 0.001
+    step: 0.1
+  max_sequence_length:
+    label: 文本最大 Token 数
+    description: Qwen3-VL 文本特征长度上限，默认 512，包含末尾 Assistant 模板；缩短可减少文本缓存和计算量，但会截断较长 Caption。
+    group: model_specific
+    priority: advanced
+    control: number
+    min: 8
+    max: 512
+    step: 8
+  save_state:
+    description: 保存 LoRA 时同时保存优化器、学习率调度器、随机状态与数据进度，以便精确续训；会增加磁盘占用。
+    effectiveDefault: true
+  resume:
+    description: 选择本训练器生成的 -state 目录；续训需保持底模、数据、Rank、Alpha、优化器、随机种子及总训练步数一致。
+  log_with:
+    choices: [tensorboard]
+    effectiveDefault: tensorboard
+  sample_at_first:
+    description: 训练开始前使用当前 Raw 模型生成一次预览；恢复训练时跳过。Raw 预览与 Turbo 最终效果不同。
+  sample_sampler:
+    choices: [euler]

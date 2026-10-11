@@ -172,6 +172,7 @@ def compile_draft(
             )
 
     errors.extend(_validate_required_params(trainer, values))
+    errors.extend(_validate_environment_params(trainer, values))
     path_errors, path_warnings = _validate_path_params(
         trainer,
         values,
@@ -288,6 +289,19 @@ def _build_param_values(
                 values.pop(name, None)
             else:
                 values[name] = normalized
+
+    # SDXL's new selector takes precedence, while legacy drafts with only the
+    # old booleans retain their original backend selection.
+    if trainer.id == "sdxl.lora":
+        if "attn_mode" not in draft.params and "attn_mode" not in draft.modelAssets:
+            if values.get("xformers"):
+                values["attn_mode"] = "xformers"
+            elif values.get("mem_eff_attn"):
+                values.pop("attn_mode", None)
+        if values.get("attn_mode") is not None:
+            values.pop("xformers", None)
+            values.pop("mem_eff_attn", None)
+            values["sdpa"] = values["attn_mode"] != "xformers"
 
     # The product default is epoch-based, while sd-scripts also accepts an
     # explicit step limit. Once a caller removes the epoch field and sets
@@ -769,6 +783,16 @@ def _apply_derived_values(values: Dict[str, Any], warnings: List[ValidationMessa
             )
 
 
+def _validate_environment_params(trainer: TrainerDefinition, values: Dict[str, Any]) -> List[ValidationMessage]:
+    errors = []
+    for name, param in trainer.params.items():
+        value = values.get(name)
+        reason = param.unavailableReason if value is True else param.unavailableChoices.get(str(value))
+        if reason:
+            errors.append(ValidationMessage(severity="error", code="param.environment.unavailable", field=f"params.{name}", message=reason))
+    return errors
+
+
 def _validate_conflicts(
     trainer: TrainerDefinition,
     draft: TrainDraft,
@@ -786,6 +810,9 @@ def _validate_conflicts(
                 message=message,
             )
         )
+
+    if trainer.id in {"sdxl.lora", "anima.lora"} and values.get("attn_mode") == "flash" and values.get("mixed_precision") not in {"fp16", "bf16"}:
+        add("param.conflict.flash_precision", "params.mixed_precision", "Flash Attention 训练需要 BF16 或 FP16 混合精度。")
 
     if values.get("network_train_unet_only") and values.get("network_train_text_encoder_only"):
         add(
@@ -923,6 +950,27 @@ def _validate_conflicts(
     if trainer.id == "sdxl.lora" and values.get("v2"):
         add("param.unsupported.sdxl_v2", "params.v2", "SDXL 训练不支持 v2 参数。")
 
+    if trainer.id == "krea2.lora":
+        if len(draft.runtime.gpuIds) > 1:
+            add("krea2.single_gpu", "runtime.gpuIds", "Krea 2 当前训练入口支持单 GPU，请只选择一张显卡。")
+        if dataset_values.get("shuffleCaption") or dataset_values.get("keepTokens"):
+            add("krea2.cached_captions", "dataset.shuffleCaption", "Krea 2 使用固定文本缓存，请关闭 Caption 打乱并将保留 Token 数设为 0。")
+        from .dataset import normalize_resolution
+
+        try:
+            if any(size % 16 or size < 16 for size in normalize_resolution(dataset_values.get("resolution"))):
+                add("krea2.resolution", "dataset.resolution", "Krea 2 训练分辨率必须为 16 的正整数倍。")
+        except (TypeError, ValueError):
+            pass  # The dataset compiler reports invalid resolution syntax.
+        for index, prompt in enumerate(draft.sample.prompts if draft.sample.enabled else []):
+            if any(size is not None and (size < 16 or size % 16) for size in (prompt.width, prompt.height)):
+                add("krea2.sample_resolution", f"sample.prompts.{index}", "Krea 2 采样宽高必须为 16 的正整数倍。")
+            if prompt.guidanceScale is not None:
+                add("krea2.sample_guidance", f"sample.prompts.{index}.guidanceScale", "Krea 2 请只填写 CFG 字段；不使用 FLUX 的嵌入式 Guidance。")
+        reference = str(values.get("pretrained_model_name_or_path", ""))
+        if Path(reference).suffix.lower() in MODEL_FILE_SUFFIXES:
+            add("krea2.model_directory", "modelAssets.pretrained_model_name_or_path", "Krea 2 底模需要完整 Diffusers 目录或仓库 ID；raw.safetensors 请填入 Transformer 权重覆盖项。")
+
     if trainer.id == "sdxl.lora" and values.get("cache_text_encoder_outputs") and not values.get("network_train_unet_only"):
         add(
             "param.requires.sdxl_unet_only",
@@ -961,6 +1009,7 @@ def _validate_conflicts(
         "hunyuan_image": 32,
         "lumina": 16,
         "anima": 16,
+        "krea2": 16,
     }.get(trainer.family)
     if bucket_alignment and dataset_values.get("enableBucket", True):
         bucket_step = dataset_values.get("bucketResoSteps", 64)

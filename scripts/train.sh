@@ -163,4 +163,4 @@ python -m accelerate.commands.launch ${launchArgs[@]} --num_cpu_threads_per_proc
   --min_bucket_reso=$min_bucket_reso \
   --max_bucket_reso=$max_bucket_reso \
   --keep_tokens=$keep_tokens \
-  --xformers --shuffle_caption ${extArgs[@]}
+  --sdpa --shuffle_caption ${extArgs[@]}

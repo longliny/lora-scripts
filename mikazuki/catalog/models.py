@@ -39,6 +39,8 @@ class ParamDefinition(BaseModel):
     sensitive: bool = False
     advanced: bool = False
     hidden: bool = False
+    unavailableReason: Optional[str] = None
+    unavailableChoices: Dict[str, str] = Field(default_factory=dict)
     rules: List[Dict[str, Any]] = Field(default_factory=list)
     extra: Dict[str, Any] = Field(default_factory=dict)
 

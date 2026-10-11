@@ -79,7 +79,12 @@ const pathHint = computed(() => {
   if (isPathControl.value) return '接受文件路径'
   return ''
 })
-const controlInfo = computed(() => [defaultHint.value, pathHint.value].filter(Boolean).join('；'))
+const controlInfo = computed(() => [
+  props.param.unavailableReason,
+  ...Object.values(props.param.unavailableChoices || {}),
+  defaultHint.value,
+  pathHint.value,
+].filter(Boolean).join('；'))
 
 // el-input-number needs `undefined` (not 0) to render an empty field, otherwise
 // every optional number silently compiles to 0.
@@ -198,12 +203,14 @@ function castSelectItem(item: unknown) {
 }
 
 function choiceLabel(choice: unknown) {
+  const unavailable = props.param.unavailableChoices?.[String(choice)]
+  const suffix = unavailable ? '（未安装）' : ''
   const labels = props.param.extra?.choiceLabels
   if (labels && typeof labels === 'object' && !Array.isArray(labels)) {
     const label = (labels as Record<string, unknown>)[String(choice)]
-    if (typeof label === 'string') return label
+    if (typeof label === 'string') return label + suffix
   }
-  return String(choice)
+  return String(choice) + suffix
 }
 
 function castArrayItem(item: unknown) {
@@ -233,6 +240,8 @@ function updatePath(next: string) {
           v-if="control === 'switch'"
           v-model="value"
           :aria-label="fieldLabel"
+          :disabled="Boolean(param.unavailableReason) && value !== true"
+          :title="param.unavailableReason"
           inline-prompt
         />
 
@@ -255,6 +264,8 @@ function updatePath(next: string) {
             :key="String(choice)"
             :label="choiceLabel(choice)"
             :value="choice"
+            :disabled="Boolean(param.unavailableChoices?.[String(choice)])"
+            :title="param.unavailableChoices?.[String(choice)]"
           />
         </el-select>
 
