@@ -162,7 +162,8 @@ class CatalogIntegrationTests(unittest.TestCase):
                     "save_every_n_steps", "gradient_accumulation_steps",
                     "gradient_checkpointing",
                 }.issubset(names))
-                self.assertIn("training_cache_dir" if summary.id == "krea2.lora" else "cache_latents", names)
+                cache_param = {"krea2.lora": "training_cache_dir", "moss_image.lora": "cache_latents_to_disk"}.get(summary.id, "cache_latents")
+                self.assertIn(cache_param, names)
                 self.assertTrue({
                     "network_module", "save_precision", "max_grad_norm",
                     "model_prediction_type", "guidance_scale", "show_timesteps",

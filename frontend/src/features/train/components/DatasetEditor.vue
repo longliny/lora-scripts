@@ -9,7 +9,7 @@ import { useDraftStore } from '@/stores/draft'
 const catalog = useCatalogStore()
 const draft = useDraftStore()
 const pickerVisible = ref(false)
-const fixedCaptionCache = computed(() => catalog.selectedTrainer?.family === 'krea2')
+const fixedCaptionCache = computed(() => ['krea2', 'moss_image'].includes(catalog.selectedTrainer?.family || ''))
 
 const resolutionLabel = computed(() => `${draft.dataset.resolution[0]} × ${draft.dataset.resolution[1]}`)
 const bucketAlignment = computed(() => {
@@ -196,7 +196,7 @@ const bucketRangeValid = computed(
         <label class="option-card" :class="{ disabled: fixedCaptionCache }">
           <span>
             <strong>随机打乱 Caption</strong>
-            <small>{{ fixedCaptionCache ? 'Krea 2 使用固定文本缓存，不支持训练期间打乱 Caption。' : '适合逗号分隔标签；与文本编码器缓存可能冲突。' }}</small>
+            <small>{{ fixedCaptionCache ? '当前训练器使用固定文本缓存，不支持训练期间打乱 Caption。' : '适合逗号分隔标签；与文本编码器缓存可能冲突。' }}</small>
           </span>
           <el-switch v-model="draft.dataset.shuffleCaption" :disabled="fixedCaptionCache" />
         </label>

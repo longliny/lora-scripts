@@ -1,14 +1,13 @@
 accelerate==1.15.0
-# Qwen3-VL captioning requires Transformers >= 4.57.0.
-transformers==4.57.6
+# Shared Krea2 / Anima / MOSS runtime (sd-scripts v0.12.2).
+transformers==5.17.0
 # Bounded-time regular expressions for Tag Editor batch replacements.
 regex>=2024.11.6
 # SmolVLM2 text normalization (Caption/VLM provider).
 num2words==0.5.14
-# Krea 2 support, compatible with Transformers 4.57 and the existing trainers.
-# Diffusers 0.40+ requires huggingface-hub 1.x / Transformers 5.x.
-diffusers[torch]==0.39.0
-peft==0.18.1
+diffusers[torch]==0.40.0
+# Transformers 5.17's adapter integration requires PEFT >= 0.19.1.
+peft==0.19.1
 ftfy==6.3.1
 # albumentations==1.3.0
 opencv-python==4.10.0.84
@@ -16,7 +15,7 @@ einops==0.7.0
 pytorch-lightning==1.9.0
 bitsandbytes==0.50.2
 lion-pytorch==0.2.3
-schedulefree==1.4
+schedulefree==1.4.1
 pytorch-optimizer==3.10.0
 prodigy-plus-schedule-free==1.9.2
 prodigyopt==1.1.2
@@ -27,7 +26,7 @@ protobuf==3.20.3
 safetensors==0.8.0
 toml==0.10.2
 voluptuous==0.15.2
-huggingface-hub==0.36.2
+huggingface-hub==1.32.0
 # for Image utils
 imagesize==1.4.1
 # for T5XXL tokenizer (SD3/FLUX)

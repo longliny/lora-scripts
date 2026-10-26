@@ -153,6 +153,14 @@ params:
     group: dataset
     priority: hidden
     hidden: true
+  enable_multiline_caption:
+    group: dataset
+    priority: hidden
+    hidden: true
+  multiline_caption_separator:
+    group: dataset
+    priority: hidden
+    hidden: true
   caption_extention:
     group: dataset
     priority: hidden
@@ -580,6 +588,25 @@ params:
   cpu_offload_checkpointing:
     label: 梯度检查点卸载到 CPU
     description: 用系统内存换取更低显存占用；不要与 Block Swap 同时启用。
+    group: memory
+    priority: advanced
+    control: switch
+  block_swap_h2d_only:
+    label: 仅 CPU 到 GPU 传输
+    description: 使用 CPU 权重和 GPU 轮换缓冲区交换模型层；需要设置 Block Swap 数量并开启梯度检查点。
+    group: memory
+    priority: advanced
+    control: switch
+  block_swap_ring_size:
+    label: GPU 轮换缓冲区数
+    description: 仅 CPU 到 GPU 传输模式使用的缓冲区数量；增大可减少等待，也会增加显存占用。
+    group: memory
+    priority: advanced
+    control: number
+    min: 1
+  use_pinned_memory_for_block_swap:
+    label: 层交换使用锁页内存
+    description: 使用 CPU 锁页内存加速模型层传输，会额外占用系统内存；仅在启用仅 CPU 到 GPU 传输模式时生效。
     group: memory
     priority: advanced
     control: switch

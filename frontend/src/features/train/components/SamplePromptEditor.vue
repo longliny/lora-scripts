@@ -9,6 +9,7 @@ import { useDraftStore } from '@/stores/draft'
 const draft = useDraftStore()
 const catalog = useCatalogStore()
 const isKrea2 = computed(() => catalog.selectedTrainer?.family === 'krea2')
+const isMoss = computed(() => catalog.selectedTrainer?.family === 'moss_image')
 
 const usesGuidance = computed(() =>
   ['flux', 'chroma', 'lumina', 'hunyuan_image', 'anima'].includes(catalog.selectedTrainer?.family || ''),
@@ -45,9 +46,9 @@ function newPrompt(): SamplePromptDraft {
     negativePrompt: '',
     width: draft.dataset.resolution[0] || 1024,
     height: draft.dataset.resolution[1] || 1024,
-    steps: isKrea2.value ? 52 : 20,
+    steps: isKrea2.value ? 52 : isMoss.value ? 50 : 20,
     seed: 1337,
-    cfgScale: isKrea2.value ? 3.5 : 1,
+    cfgScale: isKrea2.value ? 3.5 : isMoss.value ? 3 : 1,
     ...(usesGuidance.value ? { guidanceScale: 1 } : {}),
   }
 }
@@ -94,6 +95,9 @@ function updateStepSchedule(value: number | undefined) {
     <template v-if="draft.sample.enabled">
       <p v-if="isKrea2" class="sample-note">
         Krea 2 使用 Raw 底模预览，建议 52 步、CFG 3.5；CFG 0 关闭引导。最终效果请将 LoRA 加载到 Turbo，使用 8 步、CFG 0。
+      </p>
+      <p v-if="isMoss" class="sample-note">
+        MOSS 推荐 50 步、CFG 3，使用官方 Euler 调度与 Shift 5；负向分支跳过第 22 层。CFG 1 关闭引导。
       </p>
       <div class="sample-schedule">
         <label for="sample-epochs">

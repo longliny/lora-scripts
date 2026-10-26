@@ -224,8 +224,8 @@ class Krea2GpuTests(unittest.TestCase):
             scheduler = FlowMatchEulerDiscreteScheduler(use_dynamic_shifting=True, base_shift=0.5, max_shift=1.15, base_image_seq_len=256, max_image_seq_len=6400)
             pipeline = Krea2Pipeline(transformer=tiny_transformer(), text_encoder=encoder, tokenizer=tokenizer, vae=vae, scheduler=scheduler, text_encoder_select_layers=[1, 2])
             pipeline.save_pretrained(root / "model")
-            # Official Krea snapshots can use Transformers 5's list-shaped
-            # extra_special_tokens, while other trainers still require 4.x.
+            # Exercise the official snapshot's list-shaped special tokens and
+            # rope_parameters, including fixtures written by Transformers 4.
             token_path = root / "model" / "tokenizer" / "tokenizer_config.json"
             token_config = json.loads(token_path.read_text(encoding="utf-8"))
             token_config["extra_special_tokens"] = ["<unk>", "<pad>"]
@@ -233,7 +233,8 @@ class Krea2GpuTests(unittest.TestCase):
             encoder_path = root / "model" / "text_encoder" / "config.json"
             encoder_config = json.loads(encoder_path.read_text(encoding="utf-8"))
             text_config = encoder_config["text_config"]
-            text_config["rope_parameters"] = {**text_config.pop("rope_scaling"), "rope_theta": text_config.pop("rope_theta")}
+            if "rope_scaling" in text_config:
+                text_config["rope_parameters"] = {**text_config.pop("rope_scaling"), "rope_theta": text_config.pop("rope_theta")}
             encoder_path.write_text(json.dumps(encoder_config), encoding="utf-8")
             del pipeline, encoder, vae
             data = root / "images"

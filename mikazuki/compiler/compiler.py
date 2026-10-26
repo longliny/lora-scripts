@@ -73,6 +73,17 @@ def compile_draft(
     warnings: List[ValidationMessage] = []
     errors: List[ValidationMessage] = []
 
+    if trainer.id == "moss_image.lora":
+        from mikazuki.training.moss_image import migrate_legacy_values
+
+        draft = draft.copy(deep=True)
+        for field in ("params", "modelAssets"):
+            normalized, notices = migrate_legacy_values(getattr(draft, field))
+            setattr(draft, field, normalized)
+            for notice in notices:
+                warnings.append(ValidationMessage(severity="warning", code="moss_image.migrated",
+                    field=field, message=notice))
+
     run_id = _new_run_id()
     run_dir = root / "config" / "runs" / run_id
 
@@ -98,6 +109,8 @@ def compile_draft(
         )
         errors.extend(dataset_errors)
         if dataset_config is not None:
+            if trainer.id == "moss_image.lora":
+                dataset_config.setdefault("general", {})["enable_multiline_caption"] = True
             dataset_toml = toml.dumps(dataset_config)
             dataset_path = run_dir / "dataset.toml"
             values["dataset_config"] = _display_path(dataset_path)
@@ -182,6 +195,11 @@ def compile_draft(
     errors.extend(path_errors)
     warnings.extend(path_warnings)
     errors.extend(_validate_conflicts(trainer, draft, values))
+    if trainer.id == "moss_image.lora" and validate_paths:
+        resume = values.get("resume")
+        if resume and (Path(resume) / "state.pt").is_file():
+            errors.append(ValidationMessage(severity="error", code="moss_image.legacy_resume",
+                field="params.resume", message="旧 MOSS 自定义训练状态不兼容上游；可用初始 LoRA 加载权重，但不能恢复旧优化器状态。"))
 
     train_config = _build_train_config(trainer, values)
     train_toml = toml.dumps(train_config)
@@ -971,6 +989,30 @@ def _validate_conflicts(
         if Path(reference).suffix.lower() in MODEL_FILE_SUFFIXES:
             add("krea2.model_directory", "modelAssets.pretrained_model_name_or_path", "Krea 2 底模需要完整 Diffusers 目录或仓库 ID；raw.safetensors 请填入 Transformer 权重覆盖项。")
 
+    if trainer.id == "moss_image.lora":
+        if len(draft.runtime.gpuIds) > 1:
+            add("moss_image.single_gpu", "runtime.gpuIds", "MOSS 当前仅支持单 GPU。")
+        if dataset_values.get("shuffleCaption") or dataset_values.get("keepTokens"):
+            add("moss_image.cached_captions", "dataset.shuffleCaption", "MOSS 使用固定文本缓存，请关闭 Caption 打乱并将保留 Token 数设为 0。")
+        from .dataset import normalize_resolution
+
+        try:
+            if any(size < 16 or size % 16 for size in normalize_resolution(dataset_values.get("resolution"))):
+                add("moss_image.resolution", "dataset.resolution", "MOSS 分辨率必须为 16 的正整数倍。")
+        except (TypeError, ValueError):
+            pass
+        for index, prompt in enumerate(draft.sample.prompts if draft.sample.enabled else []):
+            if any(n is not None and (n < 16 or n % 16) for n in (prompt.width, prompt.height)):
+                add("moss_image.sample_resolution", f"sample.prompts.{index}", "MOSS 预览宽高必须为 16 的正整数倍。")
+            if prompt.guidanceScale is not None:
+                add("moss_image.sample_guidance", f"sample.prompts.{index}.guidanceScale", "MOSS 请只填写 CFG，不使用嵌入式 Guidance。")
+        if Path(str(values.get("pretrained_model_name_or_path", ""))).suffix.lower() in MODEL_FILE_SUFFIXES:
+            for asset in ("text_encoder", "vae"):
+                if not values.get(asset):
+                    add("moss_image.component_required", f"modelAssets.{asset}", "单文件 MOSS 底模需要另外指定 Qwen3.5 文本编码器和 FLUX.2 VAE。")
+        if values.get("block_swap_h2d_only") and (not values.get("blocks_to_swap") or not values.get("gradient_checkpointing")):
+            add("moss_image.block_swap", "params.block_swap_h2d_only", "H2D-only 需要启用梯度检查点并设置卸载层数。")
+
     if trainer.id == "sdxl.lora" and values.get("cache_text_encoder_outputs") and not values.get("network_train_unet_only"):
         add(
             "param.requires.sdxl_unet_only",
@@ -1010,6 +1052,7 @@ def _validate_conflicts(
         "lumina": 16,
         "anima": 16,
         "krea2": 16,
+        "moss_image": 16,
     }.get(trainer.family)
     if bucket_alignment and dataset_values.get("enableBucket", True):
         bucket_step = dataset_values.get("bucketResoSteps", 64)

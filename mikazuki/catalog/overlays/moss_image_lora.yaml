@@ -1,0 +1,247 @@
+trainer:
+  defaultNetworkModule: networks.lora_generic
+  datasetDefaults:
+    resolution:
+    - 1024
+    - 1024
+    minBucketReso: 256
+    maxBucketReso: 2048
+    bucketResoSteps: 16
+    shuffleCaption: false
+    keepTokens: 0
+params:
+  pretrained_model_name_or_path:
+    label: MOSS-Image 底模
+    description: 使用 sd-scripts v0.12.2。可选择完整 Base/SFT Diffusers 目录、仓库 ID 或 ComfyUI 单文件；完整目录自动匹配各组件，单文件需另外指定文本编码器和 VAE。
+    control: modelSource
+    fileKind: null
+    effectiveDefault: OpenMOSS-Team/MOSS-Image-Base
+    placeholder: OpenMOSS-Team/MOSS-Image-Base 或本地模型目录
+  revision:
+    label: 模型版本
+    description: Hugging Face 分支、标签或提交 SHA；下载时使用指定版本。使用本地目录时忽略。
+    group: model
+    priority: advanced
+    effectiveDefault: main
+  local_files_only:
+    label: 仅使用本地缓存
+    description: 禁止自动下载模型；仓库 ID 必须已完整缓存，也可直接选择本地 Diffusers 目录。
+    group: model
+    priority: advanced
+    control: switch
+  text_encoder:
+    label: Qwen3.5 文本编码器
+    description: 完整模型目录可留空；单文件底模需选择 text_encoder 的第一个分片或 ConvRot INT8 文件。不支持 W4A8 GPTQ。
+    priority: recommended
+    required: false
+  vae:
+    label: FLUX.2 VAE
+    description: 完整模型目录可留空；单文件底模需选择 FLUX.2 VAE safetensors 文件，支持 Diffusers 和 ComfyUI 格式。
+    priority: recommended
+    required: false
+  tokenizer_cache_dir:
+    label: 本地 Tokenizer
+    description: 完整目录自动使用其中 tokenizer 子目录。单文件离线训练时选择包含 tokenizer_config.json 的目录。
+    control: folder
+    group: model
+    priority: advanced
+  network_module:
+    effectiveDefault: networks.lora_generic
+    hidden: true
+    priority: hidden
+  network_dim:
+    effectiveDefault: 16
+  network_alpha:
+    description: LoRA 缩放系数；与 Rank 相同表示缩放为 1，使用上游通用 LoRA 格式保存。
+    effectiveDefault: 16
+    min: 0.001
+  network_dropout:
+    description: LoRA 分支的 Dropout 概率，必须小于 1；默认关闭。
+    max: 0.99
+  lora_target:
+    label: LoRA 训练层
+    description: 训练主 DiT 的注意力投影，或同时训练 MLP。文本细化层、时间调制、输出头、Qwen3.5 文本编码器和 VAE 始终冻结。
+    group: network
+    priority: recommended
+    control: select
+    effectiveDefault: attention_mlp
+    extra:
+      choiceLabels:
+        attention: 注意力层
+        attention_mlp: 注意力与 MLP（推荐）
+  base_precision:
+    label: 底模权重精度
+    description: 默认 BF16 底模、FP32 可训练 LoRA；可通过 ConvRot INT8 选项进一步降低底模显存。
+    group: memory
+    priority: recommended
+    control: select
+    effectiveDefault: bf16
+    extra:
+      choiceLabels:
+        bf16: BF16 原精度
+  attn_mode:
+    label: Attention 计算方式
+    description: 使用 PyTorch SDPA，支持训练反向传播；实际算子由当前 CUDA 环境选择。
+    group: memory
+    priority: recommended
+    control: select
+    effectiveDefault: sdpa
+    extra:
+      choiceLabels:
+        sdpa: SDPA（PyTorch 自动）
+  mixed_precision:
+    description: MOSS-Image 使用 BF16 训练计算，LoRA 可训练参数保留 FP32；需要支持 BF16 的 CUDA 显卡。
+    effectiveDefault: bf16
+  gradient_checkpointing:
+    effectiveDefault: true
+  cache_latents_to_disk:
+    label: 潜变量缓存到磁盘
+    description: 上游始终先缓存潜变量。启用后在数据图片旁保存 _moss.npz；模型或图片变化时应重建缓存。旧版 .moss-cache 不复用。
+    group: memory
+    priority: recommended
+    control: switch
+    effectiveDefault: false
+  cache_text_encoder_outputs_to_disk:
+    label: 文本特征缓存到磁盘
+    description: 上游始终先缓存文本特征。启用后在图片旁保存 _moss_te.npz；更换编码器或 Token 上限时应重建缓存。
+    group: memory
+    priority: recommended
+    control: switch
+    effectiveDefault: false
+  convrot_int8:
+    label: DiT ConvRot INT8
+    description: 量化冻结的 DiT 权重，LoRA 保持可训练。融合算子需要兼容的 triton-windows；未安装时采用较慢的 BF16 解量化回退。
+    group: memory
+    priority: advanced
+    control: switch
+  convrot_int8_text_encoder:
+    label: 文本编码器 ConvRot INT8
+    description: 降低 Qwen3.5 缓存阶段显存占用；预量化的 ConvRot INT8 文件由上游自动识别。
+    group: memory
+    priority: advanced
+    control: switch
+  blocks_to_swap:
+    label: 卸载 DiT 层数
+    description: 将部分冻结层放在 CPU，降低 GPU 显存并增加传输开销。0 表示关闭，最大 40。
+    group: memory
+    priority: advanced
+    control: number
+    min: 0
+    max: 40
+  block_swap_h2d_only:
+    label: 仅 CPU 到 GPU 传输
+    description: 启用上游 H2D-only Block Swap；需要设置卸载层数并开启梯度检查点。
+    group: memory
+    priority: advanced
+    control: switch
+  block_swap_ring_size:
+    label: GPU 轮换缓冲区数
+    description: H2D-only 模式的 GPU 缓冲区数量；增大可减少等待，也会增加显存占用。
+    group: memory
+    priority: advanced
+    min: 1
+  use_pinned_memory_for_block_swap:
+    label: 卸载使用锁页内存
+    description: 使用 CPU 锁页内存加速卸载层传输，会额外占用系统内存；仅在启用层卸载时生效。
+    group: memory
+    priority: advanced
+  learning_rate:
+    effectiveDefault: 0.0001
+    min: 1.0e-09
+  optimizer_type:
+    description: AdamW8bit 减少优化器状态显存；AdamW 使用标准 PyTorch 实现。两者均只更新 LoRA 参数。
+    choices:
+    - AdamW
+    - AdamW8bit
+    effectiveDefault: AdamW8bit
+    extra:
+      allowCustomChoice: false
+  weight_decay:
+    label: 权重衰减
+    description: AdamW 的权重衰减系数，默认 0.01；设为 0 可关闭。
+    group: optimizer
+    priority: advanced
+    control: number
+    min: 0
+    step: 0.001
+  lr_scheduler:
+    description: 选择恒定学习率、带预热恒定、线性或余弦衰减；按优化器更新步数推进。
+    choices:
+    - constant
+    - constant_with_warmup
+    - linear
+    - cosine
+    extra:
+      allowCustomChoice: false
+  lr_warmup_steps:
+    description: 学习率预热的整数步数；仅在使用带预热、线性或余弦调度器时生效。
+    min: 0
+    step: 1
+  timestep_sampling:
+    label: 时间步采样
+    description: 默认 sigma 配合 Logit-Normal（均值 -1.09、标准差 0.95、Shift 1）。上游不包含旧版的 0.95 截断与 1% 均匀混合，loss 不宜直接横比。
+    group: model_specific
+    priority: recommended
+    control: select
+    effectiveDefault: sigma
+    extra:
+      choiceLabels:
+        sigma: 上游 Logit-Normal（推荐）
+        uniform: 均匀分布
+        sigmoid: Sigmoid
+        shift: 固定 Shift
+        flux_shift: 随分辨率 Shift
+  discrete_flow_shift:
+    label: 训练时间步 Shift
+    description: sigma / shift 采样时生效；训练默认 1，采样出图仍使用官方 Shift 5。
+    group: model_specific
+    priority: advanced
+    min: 0.001
+    effectiveDefault: 1.0
+  logit_mean:
+    label: Logit 均值
+    description: MOSS 官方最终训练阶段均值为 -1.09；均匀采样时忽略。
+    group: model_specific
+    priority: advanced
+    control: number
+    step: 0.1
+    effectiveDefault: -1.09
+  logit_std:
+    label: Logit 标准差
+    description: MOSS 官方最终训练阶段标准差为 0.95；必须为正，均匀采样时忽略。
+    group: model_specific
+    priority: advanced
+    control: number
+    min: 0.001
+    step: 0.1
+    effectiveDefault: 0.95
+  max_sequence_length:
+    label: 文本最大 Token 数
+    description: 完整 Qwen3.5 对话模板的 Token 上限，默认 512，最大 4096。长 Caption 可调高；超过上限会截断，并增加训练显存。
+    group: model_specific
+    priority: advanced
+    control: number
+    min: 8
+    max: 4096
+    step: 8
+  save_state:
+    description: 使用上游 Accelerate 保存优化器、调度器和随机状态，训练结束时也保存。不能恢复旧版自定义训练状态；不保证逐 bit 重现。
+    effectiveDefault: true
+  resume:
+    description: 仅选择上游训练生成的状态目录。旧版 state.pt / adapter.safetensors 目录不兼容；需保持模型、数据及训练参数一致。
+  network_weights:
+    label: 初始 LoRA
+    description: 可加载旧版或上游保存的兼容 LoRA 权重作为起点；此项不恢复优化器或训练进度。
+    group: network
+    priority: advanced
+    control: file
+    fileKind: model
+  log_with:
+    choices:
+    - tensorboard
+    effectiveDefault: tensorboard
+  sample_at_first:
+    description: 更新 LoRA 前生成一次预览，作为同种子对照。默认 Euler 50 步、CFG 3。
+  sample_sampler:
+    choices:
+    - euler

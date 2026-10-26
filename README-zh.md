@@ -47,6 +47,10 @@ Stable Diffusion 训练工作台。一切集成于一个 WebUI 中。
 | ------------ | ------------ | ------------ |
 | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/b2ac5c36-3edf-43a6-9719-cb00b757fc76) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/9504fad1-7d77-46a7-a68f-91fbbdbc7407) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/4597917b-caa8-4e90-b950-8b01738996f2) |
 
+### MOSS-Image LoRA
+
+训练工作台通过集成在 `scripts/dev` 的 **kohya-ss/sd-scripts v0.12.2** 支持 **MOSS-Image LoRA**，复用现有界面、任务队列和训练指标。MOSS、Krea2、Anima 共用项目 `venv`，依赖统一为 Transformers 5.17、Diffusers 0.40、PEFT 0.19.1。安装与验收见 [MOSS-Image 训练说明](docs/moss-image-training.md)和[训练环境说明](docs/training-environment.md)。
+
 ### Krea 2 Raw LoRA
 
 训练工作台新增 **Krea 2 Raw LoRA**，沿用现有模型资产、数据集、参数分组、任务日志与指标页面。训练由项目原生代码实现，支持 BF16/NF4/FP8 底模权重、SDPA/Flash Attention 2/xFormers、分阶段缓存、宽高比分桶、断点续训和采样预览；不依赖 OneTrainer。完整底模短训结果、推荐 CUDA 环境及使用方法见 [Krea 2 训练说明](docs/krea2-training.md)。

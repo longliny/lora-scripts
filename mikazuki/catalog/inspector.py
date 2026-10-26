@@ -10,6 +10,15 @@ from typing import Any, Dict
 
 
 TRAINERS = {
+    "moss_image.lora": {
+        "title": "MOSS-Image LoRA",
+        "family": "moss_image",
+        "task": "lora",
+        "module": "mikazuki.training.moss_image",
+        "script": "scripts/moss_image_train_network.py",
+        "status": "experimental",
+        "defaultNetworkModule": "networks.lora_generic",
+    },
     "krea2.lora": {
         "title": "Krea 2 Raw LoRA",
         "family": "krea2",

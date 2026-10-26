@@ -1,37 +1,21 @@
-# sd-scripts 上游快照
+# sd-scripts 本地集成源码
 
-本目录同步自 [kohya-ss/sd-scripts v0.12.0](https://github.com/kohya-ss/sd-scripts/commit/690ea7f96c23182352ec63def76d431c6120bd2f)，
-提交时间为 2026-09-24 10:34:44 UTC，2026-09-28 核对时为 `main` 最新提交。
-可供工具读取的来源信息保存在 `UPSTREAM.json`，参数清单生成器会将其写入 manifest。
+本目录同步自 [kohya-ss/sd-scripts v0.12.2](https://github.com/kohya-ss/sd-scripts/commit/11d8cedd0c67b93a10f8b2d75f43554f6f12c794)。
+2026-10-23 在现有目录内从 v0.12.0 升级。来源记录见 `UPSTREAM.json`，参数清单生成器将其写入工作台 manifest。
 
-## 同步基线与范围
+## 同步范围
 
-- 原有 223 个受 Git 跟踪的文件，规范化 CRLF 后全部与官方 v0.11.0
-  `b8d1eb067eba32bb105984678b97f05b11452940` 一致，没有本地代码补丁。
-- 本轮上游文件新增 16 个、修改 65 个、删除 1 个；另增加本说明与 `UPSTREAM.json`。
-- 沿用现有 vendoring 范围，排除上游 `.ai/`、`.github/`、`tests/`，不收录 Python 字节码。
-- `pytorch_lightning` 兼容包及 `library` 拆分模块均为上游实现，已保留；没有覆盖项目自定义补丁。
-- `gen_img_diffusers.py` 随上游删除；训练入口及 `scripts/stable` 不受此删除影响。
+- 同步前逐文件对照官方旧提交 `690ea7f96c23182352ec63def76d431c6120bd2f`，规范化 CRLF 后无本地修改。
+- 新增 13 个文件，更新 54 个文件，没有删除上游文件。
+- 沿用原 vendoring 范围，排除 `.ai/`、`.github/`、`tests/`，不纳入 Python 字节码。
+- 上游代码原样集成；项目 Flash Attention、Anima AdaLN 精度和 MOSS 界面参数适配仍在 `mikazuki/training`。
+- MOSS、Anima、SDXL 等直接导入这里的 `library`、`networks` 和 `train_network`，不再另装 MOSS 源码或切换同名模块。
+- 旧 `runtime/moss-sd-scripts-v0.12.2` 已移至忽略的 `temp/upstream-integration/previous-moss-runtime`，仅供追溯，不参与执行。
 
-## 依赖与验证边界
+## 依赖与验证
 
-本目录 `requirements.txt` 原样保留上游推荐版本。v0.12.0 的
-[发布说明](./README.md#change-history) 同时说明旧版依赖仍可使用；本项目实际安装由根目录依赖文件控制，
-同步源码不表示已升级当前环境。
-
-| 依赖 | 旧上游推荐 | v0.12.0 推荐 |
-| --- | --- | --- |
-| accelerate | 1.6.0 | 1.15.0 |
-| transformers | 4.54.1 | 5.17.0 |
-| diffusers | 0.32.1 | 0.40.0 |
-| huggingface-hub | 0.34.3 | 1.32.0 |
-| safetensors | 0.4.5 | 0.8.0 |
-| schedulefree | 1.4 | 1.4.1 |
-
-上游新增 Windows ARM64 的 OpenCV/TensorBoard 条件依赖及 OpenCV 回退实现。
-同步时在项目现有 Python 3.10、PyTorch 2.4.1+cu121、transformers 4.54.1 环境中，
-实际导入全部 8 个工作台训练器并调用 `setup_parser()`，成功生成参数清单，未安装新依赖。
-这验证了导入与参数定义，不代表所有模型、量化或编译路径已经完成训练验证；没有加载模型或运行 GPU 训练。
+实际环境由根目录 `requirements.txt` 与 `requirements-cu130.txt` 管理，勿用本目录的上游依赖文件覆盖项目配置。
+三种模型的完整底模测试及验证范围见[项目训练环境说明](../../docs/training-environment.md)。
 
 重新生成参数清单：
 
@@ -39,5 +23,4 @@
 .\venv\Scripts\python.exe -m mikazuki.catalog.inspector generate --scripts-root scripts/dev
 ```
 
-后续同步应先验证本地与 `UPSTREAM.json` 所指快照的差异，再更新来源记录和 manifest，
-避免把本地适配误当作上游文件覆盖。
+后续同步前先核对当前源码与 `UPSTREAM.json` 所指版本，保留项目适配，再更新来源与 manifest。

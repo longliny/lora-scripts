@@ -37,7 +37,7 @@ Krea2 使用分组查询注意力（GQA）。独立 Flash 原生处理共享 K/V
 
 编码分三阶段：先加载 VAE 缓存图片并释放，再加载 Qwen3-VL 缓存文本并释放，最后加载 DiT 训练。训练期间无需将三个组件同时保留在显存。
 
-部分官方快照由 Transformers 5 保存，使用列表形式的 `extra_special_tokens` 和 `rope_parameters`。项目加载器在内存中转换为当前 Transformers 4 的等价字段，保留 Token ID、RoPE theta 和 mRoPE 分段，并检查文本编码器没有缺失或不匹配的权重；不修改底模文件。
+主环境已升级为 Transformers 5.17 / Diffusers 0.40 / PEFT 0.19.1，与 MOSS 和 Anima 共用。官方快照的列表形式 `extra_special_tokens` 和 `rope_parameters` 可由新版直接读取；加载器仍保留旧格式兼容处理，并检查文本编码器没有缺失或不匹配的权重，不修改底模文件。最新验收见[训练环境说明](training-environment.md)。
 
 缓存默认在输出目录的 `.krea2-cache/`；可在工作台指定独立缓存目录。文本缓存只存有效 Token，保留位于 Padding 后的 Assistant 后缀。图片、Caption、模型文件、Token 上限或种子变化后会生成新缓存，不复用不匹配的内容。缓存使用 Safetensors，并按需从磁盘读取。
 

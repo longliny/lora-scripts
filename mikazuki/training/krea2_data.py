@@ -1,4 +1,4 @@
-"""Bucketed image/caption data and versioned, bounded-memory caches for Krea 2."""
+"""Bucketed image/caption data and bounded-memory caches shared by Krea 2 and MOSS."""
 
 import hashlib
 import json
@@ -64,9 +64,9 @@ def bucket_size(width: int, height: int, options: dict):
     if isinstance(resolution, int):
         resolution = [resolution, resolution]
     if not isinstance(resolution, (list, tuple)) or len(resolution) != 2 or any(not isinstance(n, int) or n < 16 or n % 16 for n in resolution):
-        raise ValueError("Krea 2 resolution must be two positive multiples of 16")
+        raise ValueError("Cached LoRA resolution must be two positive multiples of 16")
     if min(width, height) < 16:
-        raise ValueError("Krea 2 images must be at least 16 pixels on each side")
+        raise ValueError("Cached LoRA images must be at least 16 pixels on each side")
     if not options.get("enable_bucket", True):
         return tuple(resolution)
     step = options.get("bucket_reso_steps", 16)
@@ -104,26 +104,26 @@ def read_records(config_path: str, cache_dir: Path, cache_identity: dict):
     source = Path(config_path).resolve()
     config = toml.load(source)
     if set(config) - {"general", "datasets"}:
-        raise ValueError("Krea 2 dataset supports only general and datasets sections")
+        raise ValueError("Cached LoRA dataset supports only general and datasets sections")
     general = config.get("general", {})
     records = []
     common = {"caption_extension", "shuffle_caption", "keep_tokens"}
     dataset_keys = {"resolution", "batch_size", "enable_bucket", "min_bucket_reso", "max_bucket_reso", "bucket_reso_steps", "bucket_no_upscale", "subsets"} | common
     subset_keys = {"image_dir", "num_repeats", "class_tokens"} | common
     if set(general) - common:
-        raise ValueError(f"Unsupported Krea 2 dataset options: {sorted(set(general) - common)}")
+        raise ValueError(f"Unsupported Cached LoRA dataset options: {sorted(set(general) - common)}")
     for dataset in config.get("datasets", []):
         if set(dataset) - dataset_keys:
-            raise ValueError(f"Unsupported Krea 2 dataset options: {sorted(set(dataset) - dataset_keys)}")
+            raise ValueError(f"Unsupported Cached LoRA dataset options: {sorted(set(dataset) - dataset_keys)}")
         batch_size = dataset.get("batch_size", 1)
         if not isinstance(batch_size, int) or batch_size <= 0:
             raise ValueError("Dataset batch_size must be a positive integer")
         for subset in dataset.get("subsets", []):
             if set(subset) - subset_keys:
-                raise ValueError(f"Unsupported Krea 2 subset options: {sorted(set(subset) - subset_keys)}")
+                raise ValueError(f"Unsupported Cached LoRA subset options: {sorted(set(subset) - subset_keys)}")
             options = {**general, **dataset, **subset}
             if options.get("shuffle_caption") or options.get("keep_tokens", 0):
-                raise ValueError("Krea 2 caches fixed captions: disable shuffle_caption and keep_tokens")
+                raise ValueError("Cached LoRA caches fixed captions: disable shuffle_caption and keep_tokens")
             root = Path(subset.get("image_dir", ""))
             if not subset.get("image_dir"):
                 raise ValueError("Dataset image_dir is required")
@@ -150,7 +150,7 @@ def read_records(config_path: str, cache_dir: Path, cache_identity: dict):
                 text_key = digest([CACHE_VERSION, cache_identity, caption])
                 records.append(ImageRecord(path, caption, size, repeats, batch_size, cache_dir / "latents" / f"{image_key}.safetensors", cache_dir / "text" / f"{text_key}.safetensors"))
     if not records:
-        raise ValueError("Krea 2 dataset contains no supported images")
+        raise ValueError("Cached LoRA dataset contains no supported images")
     return records
 
 

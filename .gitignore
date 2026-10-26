@@ -3,6 +3,8 @@
 .agent-docs/
 
 venv
+.venv-moss/
+.venv-moss-v0122/
 __pycache__
 
 output/*

@@ -321,6 +321,14 @@ export const useDraftStore = defineStore('draft', {
         const saved = readStoredDrafts()[trainerId]
         if (saved && COMPATIBLE_DRAFT_VERSIONS.has(saved.version)) {
           const sources = storedParamSources(saved, params, manifestHash)
+          if (trainerId === 'moss_image.lora') {
+            for (const source of [sources.modelAssets, sources.params]) {
+              if (source.timestep_sampling === 'moss') source.timestep_sampling = 'sigma'
+              if (source.network_module === 'moss.lora') source.network_module = 'networks.lora_generic'
+              delete source.vae_tiling
+              delete source.training_cache_dir
+            }
+          }
           const reconciled = reconcileParamRecords(
             params,
             sources.modelAssets,
@@ -359,6 +367,10 @@ export const useDraftStore = defineStore('draft', {
       if (trainerId === 'krea2.lora') {
         this.sample.prompts[0].steps = 52
         this.sample.prompts[0].cfgScale = 3.5
+      }
+      if (trainerId === 'moss_image.lora') {
+        this.sample.prompts[0].steps = 50
+        this.sample.prompts[0].cfgScale = 3
       }
       this.manifestHash = manifestHash
       this.hydratedTrainerId = trainerId

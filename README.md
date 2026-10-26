@@ -47,6 +47,10 @@ Follow the installation guide below to install the GUI, then run `run_gui.ps1`(w
 | ------------ | ------------ | ------------ |
 | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/b2ac5c36-3edf-43a6-9719-cb00b757fc76) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/9504fad1-7d77-46a7-a68f-91fbbdbc7407) | ![image](https://github.com/Akegarasu/lora-scripts/assets/36563862/4597917b-caa8-4e90-b950-8b01738996f2) |
 
+### MOSS-Image LoRA
+
+The workbench supports **MOSS-Image LoRA** using **kohya-ss/sd-scripts v0.12.2** integrated into the shared `scripts/dev` source tree, through the existing UI, job queue and metrics. MOSS, Krea2 and Anima use the shared project `venv` with Transformers 5.17, Diffusers 0.40 and PEFT 0.19.1. See the [MOSS-Image training guide](docs/moss-image-training.md) and [training environment](docs/training-environment.md) for setup and validation.
+
 ### Krea 2 Raw LoRA
 
 The training workbench includes **Krea 2 Raw LoRA**, with a project-owned training loop, aspect buckets, staged latent/text caches, BF16/NF4/FP8 weight storage, selectable SDPA/Flash Attention 2/xFormers, resumable checkpoints and previews. It uses the existing UI and job system without depending on OneTrainer. See the [Krea 2 training guide](docs/krea2-training.md) for full-model smoke-test results, the CUDA compatibility profile and validation limits.

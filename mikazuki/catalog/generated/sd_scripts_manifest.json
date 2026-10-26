@@ -1,9 +1,1096 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T14:45:06.126629+00:00",
+  "generatedAt": "2026-10-22T17:22:54.795603+00:00",
   "scriptsRoot": "scripts/dev",
   "sharedParams": {},
   "trainers": {
+    "moss_image.lora": {
+      "trainer": {
+        "title": "MOSS-Image LoRA",
+        "family": "moss_image",
+        "task": "lora",
+        "script": "scripts/moss_image_train_network.py",
+        "status": "experimental",
+        "defaultNetworkModule": "networks.lora_generic"
+      },
+      "script": "scripts/moss_image_train_network.py",
+      "params": {
+        "config_file": {
+          "name": "config_file",
+          "flags": [
+            "--config_file"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Training TOML produced by the workbench",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "pretrained_model_name_or_path": {
+          "name": "pretrained_model_name_or_path",
+          "flags": [
+            "--pretrained_model_name_or_path"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "OpenMOSS-Team/MOSS-Image-Base",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Diffusers directory or Hugging Face repository",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "revision": {
+          "name": "revision",
+          "flags": [
+            "--revision"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "main",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Model revision; resolved to an immutable commit before caching",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "local_files_only": {
+          "name": "local_files_only",
+          "flags": [
+            "--local_files_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Use only downloaded model files",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "text_encoder": {
+          "name": "text_encoder",
+          "flags": [
+            "--text_encoder"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Optional Qwen3.5 first shard / ConvRot INT8 checkpoint; auto-detected in a complete model directory",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "vae": {
+          "name": "vae",
+          "flags": [
+            "--vae"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Optional FLUX.2 VAE checkpoint; auto-detected in a complete model directory",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "tokenizer_cache_dir": {
+          "name": "tokenizer_cache_dir",
+          "flags": [
+            "--tokenizer_cache_dir"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Local tokenizer directory for offline training",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "dataset_config": {
+          "name": "dataset_config",
+          "flags": [
+            "--dataset_config"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Dataset TOML",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "output_dir": {
+          "name": "output_dir",
+          "flags": [
+            "--output_dir"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "output",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "LoRA output directory",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "output_name": {
+          "name": "output_name",
+          "flags": [
+            "--output_name"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "moss-image-lora",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Output filename without extension",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "network_module": {
+          "name": "network_module",
+          "flags": [
+            "--network_module"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "networks.lora_generic",
+          "choices": [
+            "networks.lora_generic"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Upstream generic LoRA implementation",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "network_weights": {
+          "name": "network_weights",
+          "flags": [
+            "--network_weights"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Optional existing LoRA for weight initialization, not optimizer resume",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "network_dim": {
+          "name": "network_dim",
+          "flags": [
+            "--network_dim"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 16,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "LoRA rank",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "network_alpha": {
+          "name": "network_alpha",
+          "flags": [
+            "--network_alpha"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 16.0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "LoRA alpha",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "network_dropout": {
+          "name": "network_dropout",
+          "flags": [
+            "--network_dropout"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 0.0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "LoRA dropout",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "lora_target": {
+          "name": "lora_target",
+          "flags": [
+            "--lora_target"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "attention_mlp",
+          "choices": [
+            "attention",
+            "attention_mlp"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Train main DiT attention, optionally including MLP layers",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "base_precision": {
+          "name": "base_precision",
+          "flags": [
+            "--base_precision"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "bf16",
+          "choices": [
+            "bf16"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "BF16 frozen DiT weights; FP32 trainable LoRA",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "attn_mode": {
+          "name": "attn_mode",
+          "flags": [
+            "--attn_mode"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "sdpa",
+          "choices": [
+            "sdpa"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "PyTorch scaled-dot-product attention with training backward",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "mixed_precision": {
+          "name": "mixed_precision",
+          "flags": [
+            "--mixed_precision"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "bf16",
+          "choices": [
+            "bf16"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "MOSS-Image compute precision",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "gradient_checkpointing": {
+          "name": "gradient_checkpointing",
+          "flags": [
+            "--gradient_checkpointing"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Recompute DiT activations to save memory",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "cache_latents_to_disk": {
+          "name": "cache_latents_to_disk",
+          "flags": [
+            "--cache_latents_to_disk"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Write upstream latent caches beside dataset images",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "cache_text_encoder_outputs_to_disk": {
+          "name": "cache_text_encoder_outputs_to_disk",
+          "flags": [
+            "--cache_text_encoder_outputs_to_disk"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Write upstream text caches beside dataset images",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "convrot_int8": {
+          "name": "convrot_int8",
+          "flags": [
+            "--convrot_int8"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Quantize frozen DiT weights with upstream ConvRot INT8",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "convrot_int8_text_encoder": {
+          "name": "convrot_int8_text_encoder",
+          "flags": [
+            "--convrot_int8_text_encoder"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Quantize frozen Qwen3.5 weights with ConvRot INT8",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "blocks_to_swap": {
+          "name": "blocks_to_swap",
+          "flags": [
+            "--blocks_to_swap"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "gradient_accumulation_steps": {
+          "name": "gradient_accumulation_steps",
+          "flags": [
+            "--gradient_accumulation_steps"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 1,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "max_train_epochs": {
+          "name": "max_train_epochs",
+          "flags": [
+            "--max_train_epochs"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "max_train_steps": {
+          "name": "max_train_steps",
+          "flags": [
+            "--max_train_steps"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "learning_rate": {
+          "name": "learning_rate",
+          "flags": [
+            "--learning_rate"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 0.0001,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "optimizer_type": {
+          "name": "optimizer_type",
+          "flags": [
+            "--optimizer_type"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "AdamW8bit",
+          "choices": [
+            "AdamW",
+            "AdamW8bit"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "weight_decay": {
+          "name": "weight_decay",
+          "flags": [
+            "--weight_decay"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 0.01,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "max_grad_norm": {
+          "name": "max_grad_norm",
+          "flags": [
+            "--max_grad_norm"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 1.0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "lr_scheduler": {
+          "name": "lr_scheduler",
+          "flags": [
+            "--lr_scheduler"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "constant",
+          "choices": [
+            "constant",
+            "constant_with_warmup",
+            "linear",
+            "cosine"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "lr_warmup_steps": {
+          "name": "lr_warmup_steps",
+          "flags": [
+            "--lr_warmup_steps"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "timestep_sampling": {
+          "name": "timestep_sampling",
+          "flags": [
+            "--timestep_sampling"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "sigma",
+          "choices": [
+            "sigma",
+            "uniform",
+            "sigmoid",
+            "shift",
+            "flux_shift"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "discrete_flow_shift": {
+          "name": "discrete_flow_shift",
+          "flags": [
+            "--discrete_flow_shift"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 1.0,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "logit_mean": {
+          "name": "logit_mean",
+          "flags": [
+            "--logit_mean"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": -1.09,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "logit_std": {
+          "name": "logit_std",
+          "flags": [
+            "--logit_std"
+          ],
+          "type": "number",
+          "itemType": null,
+          "default": 0.95,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "max_sequence_length": {
+          "name": "max_sequence_length",
+          "flags": [
+            "--max_sequence_length"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 512,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Formatted caption token cap; supports up to 4096",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "seed": {
+          "name": "seed",
+          "flags": [
+            "--seed"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 1337,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "save_every_n_epochs": {
+          "name": "save_every_n_epochs",
+          "flags": [
+            "--save_every_n_epochs"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 1,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "save_every_n_steps": {
+          "name": "save_every_n_steps",
+          "flags": [
+            "--save_every_n_steps"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "save_state": {
+          "name": "save_state",
+          "flags": [
+            "--save_state"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "Save upstream Accelerate training states",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "resume": {
+          "name": "resume",
+          "flags": [
+            "--resume"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Upstream training state directory; legacy native states are incompatible",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "logging_dir": {
+          "name": "logging_dir",
+          "flags": [
+            "--logging_dir"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "TensorBoard event directory",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "log_prefix": {
+          "name": "log_prefix",
+          "flags": [
+            "--log_prefix"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Event filename prefix",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "log_with": {
+          "name": "log_with",
+          "flags": [
+            "--log_with"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "tensorboard",
+          "choices": [
+            "tensorboard"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "sample_prompts": {
+          "name": "sample_prompts",
+          "flags": [
+            "--sample_prompts"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "Workbench sample prompt file",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "sample_every_n_epochs": {
+          "name": "sample_every_n_epochs",
+          "flags": [
+            "--sample_every_n_epochs"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "sample_every_n_steps": {
+          "name": "sample_every_n_steps",
+          "flags": [
+            "--sample_every_n_steps"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": null,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "sample_at_first": {
+          "name": "sample_at_first",
+          "flags": [
+            "--sample_at_first"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        },
+        "sample_sampler": {
+          "name": "sample_sampler",
+          "flags": [
+            "--sample_sampler"
+          ],
+          "type": "enum",
+          "itemType": null,
+          "default": "euler",
+          "choices": [
+            "euler"
+          ],
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "",
+          "source": {
+            "script": "scripts/moss_image_train_network.py",
+            "module": "mikazuki.training.moss_image",
+            "function": "setup_parser"
+          }
+        }
+      }
+    },
     "krea2.lora": {
       "trainer": {
         "title": "Krea 2 Raw LoRA",
@@ -1445,6 +2532,44 @@
           "action": "store_true",
           "required": false,
           "help": "enable wildcard for caption (e.g. '{image|picture|rendition}') / captionのワイルドカードを有効にする（例：'{image|picture|rendition}'）",
+          "source": {
+            "script": "scripts/dev/train_network.py",
+            "module": "train_network",
+            "function": "setup_parser"
+          }
+        },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/train_network.py",
+            "module": "train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
           "source": {
             "script": "scripts/dev/train_network.py",
             "module": "train_network",
@@ -5251,6 +6376,44 @@
           "action": "store_true",
           "required": false,
           "help": "enable wildcard for caption (e.g. '{image|picture|rendition}') / captionのワイルドカードを有効にする（例：'{image|picture|rendition}'）",
+          "source": {
+            "script": "scripts/sdxl_train_network.py",
+            "module": "mikazuki.training.sdxl",
+            "function": "setup_parser"
+          }
+        },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/sdxl_train_network.py",
+            "module": "mikazuki.training.sdxl",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
           "source": {
             "script": "scripts/sdxl_train_network.py",
             "module": "mikazuki.training.sdxl",
@@ -9143,6 +10306,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/sd3_train_network.py",
+            "module": "sd3_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/dev/sd3_train_network.py",
+            "module": "sd3_train_network",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -12630,6 +13831,63 @@
           "action": "store",
           "required": false,
           "help": "[EXPERIMENTAL] Sets the number of blocks to swap during the forward and backward passes.Increasing this number lowers the overall VRAM used during training at the expense of training speed (s/it). / 順伝播および逆伝播中にスワップするブロックの数を設定します。この数を増やすと、トレーニング中のVRAM使用量が減りますが、トレーニング速度（s/it）も低下します。",
+          "source": {
+            "script": "scripts/dev/sd3_train_network.py",
+            "module": "sd3_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/dev/sd3_train_network.py",
+            "module": "sd3_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/dev/sd3_train_network.py",
+            "module": "sd3_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
           "source": {
             "script": "scripts/dev/sd3_train_network.py",
             "module": "sd3_train_network",
@@ -13491,6 +14749,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -16978,6 +18274,63 @@
           "action": "store",
           "required": false,
           "help": "[EXPERIMENTAL] Sets the number of blocks to swap during the forward and backward passes.Increasing this number lowers the overall VRAM used during training at the expense of training speed (s/it). / 順伝播および逆伝播中にスワップするブロックの数を設定します。この数を増やすと、トレーニング中のVRAM使用量が減りますが、トレーニング速度（s/it）も低下します。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
           "source": {
             "script": "scripts/dev/flux_train_network.py",
             "module": "flux_train_network",
@@ -17795,6 +19148,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -21282,6 +22673,63 @@
           "action": "store",
           "required": false,
           "help": "[EXPERIMENTAL] Sets the number of blocks to swap during the forward and backward passes.Increasing this number lowers the overall VRAM used during training at the expense of training speed (s/it). / 順伝播および逆伝播中にスワップするブロックの数を設定します。この数を増やすと、トレーニング中のVRAM使用量が減りますが、トレーニング速度（s/it）も低下します。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/dev/flux_train_network.py",
+            "module": "flux_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
           "source": {
             "script": "scripts/dev/flux_train_network.py",
             "module": "flux_train_network",
@@ -22099,6 +23547,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/lumina_train_network.py",
+            "module": "lumina_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/dev/lumina_train_network.py",
+            "module": "lumina_train_network",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -25586,6 +27072,63 @@
           "action": "store",
           "required": false,
           "help": "[EXPERIMENTAL] Sets the number of blocks to swap during the forward and backward passes.Increasing this number lowers the overall VRAM used during training at the expense of training speed (s/it). / 順伝播および逆伝播中にスワップするブロックの数を設定します。この数を増やすと、トレーニング中のVRAM使用量が減りますが、トレーニング速度（s/it）も低下します。",
+          "source": {
+            "script": "scripts/dev/lumina_train_network.py",
+            "module": "lumina_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/dev/lumina_train_network.py",
+            "module": "lumina_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/dev/lumina_train_network.py",
+            "module": "lumina_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
           "source": {
             "script": "scripts/dev/lumina_train_network.py",
             "module": "lumina_train_network",
@@ -26363,6 +27906,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/dev/hunyuan_image_train_network.py",
+            "module": "hunyuan_image_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/dev/hunyuan_image_train_network.py",
+            "module": "hunyuan_image_train_network",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -29850,6 +31431,63 @@
           "action": "store",
           "required": false,
           "help": "[EXPERIMENTAL] Sets the number of blocks to swap during the forward and backward passes.Increasing this number lowers the overall VRAM used during training at the expense of training speed (s/it). / 順伝播および逆伝播中にスワップするブロックの数を設定します。この数を増やすと、トレーニング中のVRAM使用量が減りますが、トレーニング速度（s/it）も低下します。",
+          "source": {
+            "script": "scripts/dev/hunyuan_image_train_network.py",
+            "module": "hunyuan_image_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/dev/hunyuan_image_train_network.py",
+            "module": "hunyuan_image_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/dev/hunyuan_image_train_network.py",
+            "module": "hunyuan_image_train_network",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
           "source": {
             "script": "scripts/dev/hunyuan_image_train_network.py",
             "module": "hunyuan_image_train_network",
@@ -30651,6 +32289,44 @@
             "function": "setup_parser"
           }
         },
+        "enable_multiline_caption": {
+          "name": "enable_multiline_caption",
+          "flags": [
+            "--enable_multiline_caption"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "use multi-line captions as they are (including line breaks). Multiple caption candidates can be separated by lines starting with `--multiline_caption_separator`, and one is chosen randomly at each step / 複数行のキャプションを改行を含めてそのまま使う。`--multiline_caption_separator` で始まる行で複数のキャプション候補を区切ると、ステップごとにランダムに1つが選ばれる",
+          "source": {
+            "script": "scripts/anima_train_network.py",
+            "module": "mikazuki.training.anima",
+            "function": "setup_parser"
+          }
+        },
+        "multiline_caption_separator": {
+          "name": "multiline_caption_separator",
+          "flags": [
+            "--multiline_caption_separator"
+          ],
+          "type": "string",
+          "itemType": null,
+          "default": "---===---",
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "prefix of the lines which separate caption candidates when `--enable_multiline_caption` is enabled. Text after `#` on the line is a comment / `--enable_multiline_caption` 有効時に、キャプション候補を区切る行の先頭文字列。行内の `#` 以降はコメント",
+          "source": {
+            "script": "scripts/anima_train_network.py",
+            "module": "mikazuki.training.anima",
+            "function": "setup_parser"
+          }
+        },
         "caption_prefix": {
           "name": "caption_prefix",
           "flags": [
@@ -34144,6 +35820,63 @@
             "function": "setup_parser"
           }
         },
+        "block_swap_h2d_only": {
+          "name": "block_swap_h2d_only",
+          "flags": [
+            "--block_swap_h2d_only"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(experimental, frozen-base / LoRA training only) use H2D-only block swap: keep a CPU master copy of streamed weights and only copy Host->Device, never back. Removes the D2H transfer. Requires --gradient_checkpointing. Not supported for SD3. / (実験的、ベース凍結＝LoRA学習専用) H2DのみのブロックスワップでD2H転送を行わない。--gradient_checkpointing が必須。SD3では使用不可。",
+          "source": {
+            "script": "scripts/anima_train_network.py",
+            "module": "mikazuki.training.anima",
+            "function": "setup_parser"
+          }
+        },
+        "block_swap_ring_size": {
+          "name": "block_swap_ring_size",
+          "flags": [
+            "--block_swap_ring_size"
+          ],
+          "type": "integer",
+          "itemType": null,
+          "default": 2,
+          "choices": null,
+          "nargs": null,
+          "action": "store",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) number of GPU ring buffers for streamed blocks. 2 = double buffering (one computed on, one prefetched); 1 = minimal memory but no transfer/compute overlap. / (--block_swap_h2d_only用) ストリーミング用GPUリングバッファ数。2でダブルバッファ、1で最小メモリ(オーバーラップなし)。",
+          "source": {
+            "script": "scripts/anima_train_network.py",
+            "module": "mikazuki.training.anima",
+            "function": "setup_parser"
+          }
+        },
+        "use_pinned_memory_for_block_swap": {
+          "name": "use_pinned_memory_for_block_swap",
+          "flags": [
+            "--use_pinned_memory_for_block_swap"
+          ],
+          "type": "boolean",
+          "itemType": null,
+          "default": false,
+          "choices": null,
+          "nargs": 0,
+          "action": "store_true",
+          "required": false,
+          "help": "(used with --block_swap_h2d_only) keep the CPU master copies of the streamed weights in pinned memory for faster Host->Device copies. Uses more shared GPU memory on Windows. Without this, the transfers are staged through a small pinned buffer pool on a worker thread. / (--block_swap_h2d_only用) ストリーミングする重みのCPUマスターコピーをピン留めメモリに置き、Host->Device転送を高速化する。Windowsでは共有GPUメモリを多く使用する。指定しない場合は小さなピン留めバッファを介してワーカースレッドで転送する。",
+          "source": {
+            "script": "scripts/anima_train_network.py",
+            "module": "mikazuki.training.anima",
+            "function": "setup_parser"
+          }
+        },
         "qwen3": {
           "name": "qwen3",
           "flags": [
@@ -34683,11 +36416,10 @@
   },
   "upstream": {
     "repository": "https://github.com/kohya-ss/sd-scripts",
-    "ref": "main",
-    "commit": "690ea7f96c23182352ec63def76d431c6120bd2f",
-    "committedAt": "2026-09-24T10:34:44Z",
-    "version": "0.12.0",
-    "previousCommit": "b8d1eb067eba32bb105984678b97f05b11452940",
+    "ref": "v0.12.2",
+    "commit": "11d8cedd0c67b93a10f8b2d75f43554f6f12c794",
+    "version": "0.12.2",
+    "previousCommit": "690ea7f96c23182352ec63def76d431c6120bd2f",
     "excludedPaths": [
       ".ai/",
       ".github/",
@@ -34695,5 +36427,5 @@
     ],
     "localPatches": []
   },
-  "manifestHash": "377232e5fede3aedd34866e8b1b4d3800e12fa51297c5add8044c06fd7dd606e"
+  "manifestHash": "388ff3059c8505072d074f932c81efd2708ca946199d24b18fd11678facc4ea8"
 }
